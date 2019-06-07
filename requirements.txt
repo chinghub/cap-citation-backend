@@ -4,3 +4,10 @@ flask-limiter
 
 #dotenv
 zappa
+
+
+boto3
+logmatic-python
+
+coverage
+black

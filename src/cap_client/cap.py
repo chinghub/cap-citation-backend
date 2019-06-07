@@ -23,7 +23,9 @@ DATE_MAX_KEY='decision_date_max' # e.g. 2100-12-30
 
 AUTH_HEADER = "Authorization: Token {}"
 
-cap_token = os.getenv("CAP_TOKEN")
+def get_header():
+    CAP_TOKEN = os.getenv("CAP_TOKEN")
+    return {"Authorization": "Token {}".format(CAP_TOKEN)}
 
 class Case():
     def __init__(self, id, jurisdiction, name, name_abbreviation, reporter, url, volume, citations, court, decision_date, docket_number, first_page, last_page, casebody):
@@ -46,9 +48,31 @@ class Case():
     def from_dict(cls):
         return cls()
 
+def get_case(case_id):
+
+    args = {
+        "full_case":"true",
+        "body_format":"text"
+    }
+
+    url = BASE_URL + ENDPOINTS['cases'] + "/" + case_id + "/?" + parse.urlencode(args)
+
+    print(url)
+    print(get_header())
+
+    #r = requests.get(url=url, headers=get_header())
+    r = requests.get(url=url, headers=get_header())
+    if r.status_code != 200:
+        raise Exception(f"error ({r.status_code}) calling api: {r.json()}")
+
+    return r.json()
 
 def get_cases(jurisdiction, start_date, end_date="2020-01-01"):
-    headers = {"Authorization": "Token {}".format(cap_token)}
+    """
+    e.g.
+    jurisdiction="wash"
+    start_date="1999-01-01"
+    """
 
     args = {
         "jurisdiction":jurisdiction,
@@ -61,7 +85,7 @@ def get_cases(jurisdiction, start_date, end_date="2020-01-01"):
 
     url = BASE_URL + ENDPOINTS['cases'] + "?" + parse.urlencode(args)
 
-    r = requests.get(url=url, headers=headers)
+    r = requests.get(url=url, headers=HEADERS)
     if r.status_code != 200:
         raise Exception('error ({}) calling api: {}'.format(r.status_code, r.json()))
 
