@@ -2,3 +2,8 @@
 .env*
 venv
 *.pyc
+.terraform
+htmlcov/ ]
+htmlcov/
+*.zip
+.coverage

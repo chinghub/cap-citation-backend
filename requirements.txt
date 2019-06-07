@@ -8,6 +8,9 @@ zappa
 
 boto3
 logmatic-python
+python-dotenv
+requests
 
 coverage
 black
+pyflakes

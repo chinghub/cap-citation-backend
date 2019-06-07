@@ -2,7 +2,7 @@ import os
 import requests
 from urllib import parse
 
-BASE_URL="https://api.case.law/v1/"
+BASE_URL = "https://api.case.law/v1/"
 
 ENDPOINTS = {
     "cases": "cases/",
@@ -11,24 +11,42 @@ ENDPOINTS = {
     "courts": "courts/",
     "volumes": "volumes/",
     "reporters": "reporters/",
-    "bulk": "bulk/"
+    "bulk": "bulk/",
 }
 
-CASE_JURISTICTIONS= ["wash", "ill"]
+CASE_JURISTICTIONS = ["wash", "ill"]
 CASE_FORMATS = ["xml", "html", "text"]
-PAGINATION="page_size={}"
+PAGINATION = "page_size={}"
 
-DATE_MIN_KEY='decision_date_min' # e.g. 1994-12-30
-DATE_MAX_KEY='decision_date_max' # e.g. 2100-12-30
+DATE_MIN_KEY = "decision_date_min"  # e.g. 1994-12-30
+DATE_MAX_KEY = "decision_date_max"  # e.g. 2100-12-30
 
 AUTH_HEADER = "Authorization: Token {}"
+
 
 def get_header():
     CAP_TOKEN = os.getenv("CAP_TOKEN")
     return {"Authorization": "Token {}".format(CAP_TOKEN)}
 
-class Case():
-    def __init__(self, id, jurisdiction, name, name_abbreviation, reporter, url, volume, citations, court, decision_date, docket_number, first_page, last_page, casebody):
+
+class Case:
+    def __init__(
+        self,
+        id,
+        jurisdiction,
+        name,
+        name_abbreviation,
+        reporter,
+        url,
+        volume,
+        citations,
+        court,
+        decision_date,
+        docket_number,
+        first_page,
+        last_page,
+        casebody,
+    ):
         self.id = id
         self.jurisdiction = jurisdiction
         self.name = name
@@ -48,24 +66,20 @@ class Case():
     def from_dict(cls):
         return cls()
 
+
 def get_case(case_id):
 
-    args = {
-        "full_case":"true",
-        "body_format":"text"
-    }
+    args = {"full_case": "true", "body_format": "text"}
 
-    url = BASE_URL + ENDPOINTS['cases'] + "/" + case_id + "/?" + parse.urlencode(args)
+    url = BASE_URL + ENDPOINTS["cases"] + "/" + case_id + "/?" + parse.urlencode(args)
 
-    print(url)
-    print(get_header())
-
-    #r = requests.get(url=url, headers=get_header())
+    # r = requests.get(url=url, headers=get_header())
     r = requests.get(url=url, headers=get_header())
     if r.status_code != 200:
         raise Exception(f"error ({r.status_code}) calling api: {r.json()}")
 
     return r.json()
+
 
 def get_cases(jurisdiction, start_date, end_date="2020-01-01"):
     """
@@ -75,41 +89,40 @@ def get_cases(jurisdiction, start_date, end_date="2020-01-01"):
     """
 
     args = {
-        "jurisdiction":jurisdiction,
-        "full_case":"true",
-        "body_format":"text",
-        #"page_size":page_size,
-        "decision_date_min":start_date,
-        "decision_date_max":end_date
+        "jurisdiction": jurisdiction,
+        "full_case": "true",
+        "body_format": "text",
+        # "page_size":page_size,
+        "decision_date_min": start_date,
+        "decision_date_max": end_date,
     }
 
-    url = BASE_URL + ENDPOINTS['cases'] + "?" + parse.urlencode(args)
+    url = BASE_URL + ENDPOINTS["cases"] + "?" + parse.urlencode(args)
 
-    r = requests.get(url=url, headers=HEADERS)
+    r = requests.get(url=url, headers=get_header())
     if r.status_code != 200:
-        raise Exception('error ({}) calling api: {}'.format(r.status_code, r.json()))
+        raise Exception("error ({}) calling api: {}".format(r.status_code, r.json()))
 
     results = []
-    batch=1
+    batch = 1
 
     data = r.json()
-    results.extend(data['results'])
+    results.extend(data["results"])
 
     # print(data['next'])
     # print(data['previous'])
-    print(data['count'])
+    print(data["count"])
 
     try:
-        while 'next' in data and data['next']:
+        while "next" in data and data["next"]:
             batch += 1
-            print('batch {} total: {}'.format(batch, len(results)))
-            r = requests.get(url=data['next'], headers=headers)
+            print("batch {} total: {}".format(batch, len(results)))
+            r = requests.get(url=data["next"], headers=get_header())
             if r.status_code != 200:
                 raise Exception()
             data = r.json()
-            results.extend(data['results'])
+            results.extend(data["results"])
     except:
         pass
-
 
     return results

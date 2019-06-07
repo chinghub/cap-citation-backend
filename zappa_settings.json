@@ -1,6 +1,14 @@
 {
     "dev": {
-        "app_function": "src.cap-citation-service.app",
+        "app_function": "src.cap_citation_service.app",
+        "profile_name": "cap",
+        "project_name": "cap-citation-ba",
+        "runtime": "python3.7",
+        "s3_bucket": "zappa-w2gtd588g",
+        "cors": true
+    },
+    "production": {
+        "app_function": "src.cap_citation_service.app",
         "profile_name": "cap",
         "project_name": "cap-citation-ba",
         "runtime": "python3.7",

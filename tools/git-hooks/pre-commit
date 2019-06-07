@@ -1,0 +1,11 @@
+#!/bin/bash
+
+$(source venv/bin/activate && black -q --check src/)
+resp=$?
+
+if [ "$resp" != 0 ]; then
+  echo "unformatted files found"
+  exit 1
+fi
+
+make test

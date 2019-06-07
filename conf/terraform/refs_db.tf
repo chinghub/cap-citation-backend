@@ -1,15 +1,40 @@
-resource "aws_dynamodb_table" "cap_citation_refs_dynamo_table" {
-  name = "CapCitationRefs"
-  read_capacity = 1
-  write_capacity = 1
-  hash_key = "CapId"
+resource "aws_dynamodb_table" "cap_cases_dynamo_table" {
+  name = "CapCases"
+  hash_key = "CapCaseId"
 
   attribute {
-    name = "CapId"
+    name = "CapCaseId"
     type = "S"
   }
 
-  tags {
+  read_capacity = 1
+  write_capacity = 1
+
+  tags = {
+    Name = "CapCases"
+    Environment = "DEV"
+  }
+}
+
+resource "aws_dynamodb_table" "cap_case_refs_dynamo_table" {
+  name = "CapCaseRefs"
+  hash_key = "CapCaseId"
+  range_key = "ProcessTime"
+
+  attribute {
+    name = "CapCaseId"
+    type = "S"
+  }
+
+  attribute {
+    name = "ProcessTime"
+    type = "N"
+  }
+
+  read_capacity = 1
+  write_capacity = 1
+
+  tags = {
     Name = "CapCitationRefs"
     Environment = "DEV"
   }
